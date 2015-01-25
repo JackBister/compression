@@ -10,7 +10,7 @@ int main(string[] argv) {
 }
 
 ubyte[] compress(ubyte[] inb) pure {
-	ubyte *map[][255];
+	ubyte *map[255][];
 	ubyte[] ret;
 	for (int i = 0; i < inb.length; i++) {
 		auto p = testPtr(map, &inb[i]);
@@ -18,18 +18,23 @@ ubyte[] compress(ubyte[] inb) pure {
 			ret ~= 0;
 			ret ~= p[0]; 
 			ret ~= p[1];
+			i += p[1] & 0x3F;
 		} else {
-			
+			ret ~= inb[i];
+			map[inb[i]] ~= &inb[i];
 		}
 	}
 	return ret;
 }
 
-ubyte[2] testPtr(ubyte*[255][] m, ubyte *b) pure {
+ubyte[2] testPtr(ubyte*[][255] m, ubyte *b) pure {
 	ubyte[2] longestMatch = [0,0];
 	foreach (ubyte *ub; m[*b]) {
+		const auto start = b;
 		auto length = 0;
 		while (*(ub++) == *(b++)) {
+			if (ub == start)
+				break;
 			length++;
 		}
 		if (length > 3 && length > (longestMatch[1] & 0x3F) && length < 0x3F) {
