@@ -1,15 +1,24 @@
-import std.file;
+import file = std.file;
+import stdio = std.stdio;
 
 int main(string[] argv) {
-	for (int i = 1; i < argv.length; i++) {
-		auto inb = cast(ubyte[]) read(argv[i]);
-		auto outb = compress(inb);
-		write(argv[i]~".comp", outb);
+	if (argv[1] == "decompress") {
+		for (int i = 2; i < argv.length; i++) {
+			auto inb = cast(ubyte[]) file.read(argv[i]);
+			auto outb = decompress(inb);
+			file.write(argv[i]~".decomp", outb);
+		}
+	} else {
+		for (int i = 1; i < argv.length; i++) {
+			auto inb = cast(ubyte[]) file.read(argv[i]);
+			auto outb = compress(inb);
+			file.write(argv[i]~".comp", outb);
+		}
 	}
 	return 0;
 }
 
-ubyte[] compress(ubyte[] inb) pure {
+ubyte[] compress(ubyte[] inb) {
 	ubyte *map[255][];
 	ubyte[] ret;
 	for (int i = 0; i < inb.length; i++) {
@@ -27,12 +36,12 @@ ubyte[] compress(ubyte[] inb) pure {
 	return ret;
 }
 
-ubyte[2] testPtr(ubyte*[][255] m, ubyte *b) pure {
+ubyte[2] testPtr(ubyte*[][255] m, ubyte *b) {
 	ubyte[2] longestMatch = [0,0];
 	foreach (ubyte *ub; m[*b]) {
 		const auto start = b;
 		auto length = 0;
-		while (*(ub++) == *(b++)) {
+		while (*ub++ == *b++) {
 			if (ub == start)
 				break;
 			length++;
@@ -48,4 +57,23 @@ ubyte[2] testPtr(ubyte*[][255] m, ubyte *b) pure {
 		}
 	}
 	return longestMatch;
+}
+
+ubyte[] decompress(ubyte[] inb) {
+	ubyte[] ret;
+	for (int i = 0; i < inb.length; i++) {
+		if (inb[i] == 0) {
+			const ushort dist = (inb[i+2] >> 6) | (inb[i+1] << 2);
+			stdio.writef("%d", dist);
+			const auto length = inb[i+2] & 0x3F;
+			const auto startl = i-dist;
+			stdio.writef("%d", startl);
+			for (int j = startl; j < startl+length; j++) {
+				ret ~= inb[j];
+			}
+		} else {
+			ret ~= inb[i];
+		}
+	}
+	return ret;
 }
