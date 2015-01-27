@@ -61,16 +61,19 @@ ubyte[2] testPtr(ubyte*[][255] m, ubyte *b) {
 
 ubyte[] decompress(ubyte[] inb) {
 	ubyte[] ret;
+	auto adjust = 0;
 	for (int i = 0; i < inb.length; i++) {
 		if (inb[i] == 0) {
 			const ushort dist = (inb[i+2] >> 6) | (inb[i+1] << 2);
 			stdio.writef("%d", dist);
 			const auto length = inb[i+2] & 0x3F;
-			const auto startl = i-dist;
+			const auto startl = i-(dist-adjust);
+			adjust += length-2;
 			stdio.writef("%d", startl);
 			for (int j = startl; j < startl+length; j++) {
 				ret ~= inb[j];
 			}
+			i += 2;
 		} else {
 			ret ~= inb[i];
 		}
