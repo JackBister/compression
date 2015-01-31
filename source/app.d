@@ -23,16 +23,17 @@ ubyte[] compress(ubyte[] inb) {
 	ubyte[] ret;
 	for (int i = 0; i < inb.length; i++) {
 		auto p = testPtr(map, &inb[i]);
-		if (p[0] != 0) {
+		if (p[1] != 0) {
 			ret ~= 0;
 			ret ~= p[0]; 
 			ret ~= p[1];
-			i += p[1] & 0x3F;
+			i += (p[1] & 0x3F);
 		} else {
 			ret ~= inb[i];
 			map[inb[i]] ~= &inb[i];
 		}
 	}
+	stdio.write(ret);
 	return ret;
 }
 
@@ -41,10 +42,11 @@ ubyte[2] testPtr(ubyte*[][255] m, ubyte *b) {
 	foreach (ubyte *ub; m[*b]) {
 		const auto start = b;
 		auto length = 0;
-		while (*ub++ == *b++) {
+		while (*ub == *b) {	
 			if (ub == start)
 				break;
 			length++;
+			ub++; b++;
 		}
 		if (length > 3 && length > (longestMatch[1] & 0x3F) && length < 0x3F) {
 			auto dist = b - ub;
@@ -61,21 +63,21 @@ ubyte[2] testPtr(ubyte*[][255] m, ubyte *b) {
 
 ubyte[] decompress(ubyte[] inb) {
 	ubyte[] ret;
-	auto adjust = 0;
+	auto c = 0;
 	for (int i = 0; i < inb.length; i++) {
 		if (inb[i] == 0) {
 			const ushort dist = (inb[i+2] >> 6) | (inb[i+1] << 2);
-			stdio.writef("%d", dist);
 			const auto length = inb[i+2] & 0x3F;
-			const auto startl = i-(dist-adjust);
-			adjust += length-2;
-			stdio.writef("%d", startl);
+			const auto startl = c-dist;
 			for (int j = startl; j < startl+length; j++) {
-				ret ~= inb[j];
+				ret ~= ret[j];
+				c++;
 			}
+			c++;
 			i += 2;
 		} else {
 			ret ~= inb[i];
+			c++;
 		}
 	}
 	return ret;
