@@ -42,11 +42,8 @@ ubyte[2] testPtr(ubyte*[][255] m, ubyte *b) {
 	foreach (ubyte *ub; m[*b]) {
 		const auto start = b;
 		auto length = 0;
-		while (*ub == *b) {	
-			if (ub == start)
-				break;
+		while (*ub++ == *b++) {	
 			length++;
-			ub++; b++;
 		}
 		if (length > 3 && length > (longestMatch[1] & 0x3F) && length < 0x3F) {
 			auto dist = b - ub;
