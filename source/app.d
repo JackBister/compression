@@ -37,6 +37,10 @@ ubyte[] compress(ubyte[] inb) {
 	return ret;
 }
 
+//Takes a ubyte pointer and a an array of ubyte pointer slices (a "map"), then finds the longest
+//sequence where the ubytes pointed to in the map match the ubytes pointed to by b
+//Returns an array of two ubytes. The 6 lowest bits in the second element is the length of the match
+//And the remaining bits are the distance between the match and the given byte.
 ubyte[2] testPtr(ubyte*[][255] m, ubyte *b) {
 	ubyte[2] longestMatch = [0,0];
 	foreach (ubyte *ub; m[*b]) {
