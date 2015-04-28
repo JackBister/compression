@@ -2,15 +2,17 @@ import file = std.file;
 import stdio = std.stdio;
 
 int main(string[] argv) {
-	if (argv[1] == "decompress") {
-		for (int i = 2; i < argv.length; i++) {
-			auto inb = cast(ubyte[]) file.read(argv[i]);
+	bool decomp = false;
+	for (int i = 1; i < argv.length; i++) {
+		if (argv[i] == "-decompress" || argv[i] == "-d") {
+			decomp = true;
+			continue;
+		}
+		auto inb = cast(ubyte[]) file.read(argv[i]);
+		if (decomp) {
 			auto outb = decompress(inb);
 			file.write(argv[i]~".decomp", outb);
-		}
-	} else {
-		for (int i = 1; i < argv.length; i++) {
-			auto inb = cast(ubyte[]) file.read(argv[i]);
+		} else {
 			auto outb = compress(inb);
 			file.write(argv[i]~".comp", outb);
 		}
