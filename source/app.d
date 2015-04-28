@@ -22,6 +22,8 @@ int main(string[] argv) {
 			file.write(argv[i]~".decomp", outb);
 		} else {
 			auto outb = compress(inb);
+			if (outb.length == 0)
+				return 1;
 			file.write(argv[i]~".comp", outb);
 		}
 	}
@@ -51,6 +53,10 @@ ubyte[] compress(ubyte[] inb) {
 	ubyte *map[255][];
 	ubyte[] ret;
 	for (int i = 0; i < inb.length; i++) {
+		if (inb[i] == 0) {
+			stdio.writeln("Error: File contains one or more null bytes. This file can't be compressed by this program!");
+			return new ubyte[0];
+		}
 		auto p = testPtr(map, &inb[i]);
 		if (p[1] != 0) {
 			ret ~= 0;
