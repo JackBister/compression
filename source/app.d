@@ -3,7 +3,7 @@ import stdio = std.stdio;
 
 int main(string[] argv) {
 	bool decomp = false;
-	if (argv.length) {
+	if (argv.length == 0) {
 		stdio.writeln(help());
 		return 0;
 	}
