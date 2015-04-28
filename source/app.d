@@ -27,7 +27,7 @@ ubyte[] compress(ubyte[] inb) {
 			ret ~= 0;
 			ret ~= p[0]; 
 			ret ~= p[1];
-			i += (p[1] & 0x3F);
+			i += (p[1] & 0x3F) - 1;
 		} else {
 			ret ~= inb[i];
 			map[inb[i]] ~= &inb[i];
