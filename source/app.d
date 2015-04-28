@@ -1,5 +1,4 @@
 import file = std.file;
-import stdio = std.stdio;
 
 int main(string[] argv) {
 	bool decomp = false;
@@ -35,7 +34,6 @@ ubyte[] compress(ubyte[] inb) {
 			map[inb[i]] ~= &inb[i];
 		}
 	}
-	stdio.write(ret);
 	return ret;
 }
 
