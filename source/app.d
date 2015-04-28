@@ -1,11 +1,20 @@
 import file = std.file;
+import stdio = std.stdio;
 
 int main(string[] argv) {
 	bool decomp = false;
+	if (argv.length) {
+		stdio.writeln(help());
+		return 0;
+	}
 	for (int i = 1; i < argv.length; i++) {
 		if (argv[i] == "-decompress" || argv[i] == "-d") {
 			decomp = true;
 			continue;
+		}
+		if (argv[i] == "--help" || argv[i] == "-h") {
+			stdio.writeln(help());
+			return 0;
 		}
 		auto inb = cast(ubyte[]) file.read(argv[i]);
 		if (decomp) {
@@ -17,6 +26,25 @@ int main(string[] argv) {
 		}
 	}
 	return 0;
+}
+
+string help() {
+	return "NAME\n\t
+				compression - A simple compression utility for text files.\n\n
+			SYNOPSIS\n\t
+				\033[1mcompression\033[0m [compfiles...] [\033[1m-d | -decompress\033[0m decompfiles...]
+				\033[1mcompression\033[0m [\033[1m--help\033[0m | \033[1m-h\033[0m]\n\n
+			DESCRIPTION\n\t
+				compression is a simple compression program. It works on any file that does not
+				contain a null byte. Each argument to compression must be a filename, except the
+				optional -d flag. Any file arguments before the -d flag are compressed, and any
+				file arguments after the -d flag will be decompressed.\n\n
+			OPTIONS\n\t
+				-h, --help\n\t\t
+					Show this help text.\n\n
+				-d, --decompress\n\t\t
+					Decompress any file arguments following this flag.
+	";
 }
 
 ubyte[] compress(ubyte[] inb) {
