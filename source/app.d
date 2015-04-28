@@ -74,7 +74,6 @@ ubyte[] decompress(ubyte[] inb) {
 				ret ~= ret[j];
 				c++;
 			}
-			c++;
 			i += 2;
 		} else {
 			ret ~= inb[i];
